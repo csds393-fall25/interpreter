@@ -102,12 +102,42 @@ public class SpartieScanner {
     private Token getNumericToken() {
         // Hint: Follow similar idea of String, but in this case if it is a digit
         // You should only allow one period in your scanner
+        boolean hasPeriod = false;
+
+        //number is from start (inclusive) to current (exclusive)
+        while(!isAtEnd() && (isDigit(source.charAt(current)) || (source.charAt(current) == '.' && !hasPeriod))) {
+            if(source.charAt(current) == '.') {
+                hasPeriod = true;
+            }
+            current ++;
+        }
+
+        if(current != start) {
+            String number = source.substring(start, current);
+            start = current;
+            return new Token(TokenType.NUMBER, number, line, Double.parseDouble(number));
+        }
+
         return null;
     }
 
     // TODO: Complete implementation
     private Token getIdentifierOrReservedWord() {
         // Hint: Assume first it is an identifier and once you capture it, then check if it is a reserved word.
+
+        while(!isAtEnd() && isAlpha(source.charAt(current))) {
+            current++;
+        }
+
+        if(current != start) {
+            String identifier = source.substring(start, current);
+            start = current;
+            if(keywords.containsKey(identifier)) {
+                return new Token(keywords.get(identifier), identifier, line, identifier);
+            }
+
+            return new Token(TokenType.IDENTIFIER, identifier, line, identifier);
+        }
         return null;
     }
     
