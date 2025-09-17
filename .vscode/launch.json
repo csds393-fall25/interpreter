@@ -9,7 +9,6 @@
             "name": "Main",
             "request": "launch",
             "mainClass": "Main",
-            "projectName": "interpreter_b43ddfc2",
             "args": "Template/source.sprty"
         }
     ]
