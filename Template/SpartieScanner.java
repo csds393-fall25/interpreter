@@ -59,101 +59,10 @@ public class SpartieScanner {
 
     // TODO: Complete implementation
     private Token getSingleCharacterToken() {
-        
         // Hint: Examine the character, if you can get a token, return it, otherwise return null
         // Hint: Be careful with the divide, we have ot know if it is a single character
 
         char nextCharacter = source.charAt(current);
-        // if hit eol, increase line
-        // difference between subtract and negative??
-        System.out.println("current = " + current);
-        System.out.println(nextCharacter + " " + (int)nextCharacter);
-        System.out.println((int)'\n');
-        System.out.println((int)'\r');
-        char eol = 13;
-        System.out.println(eol);
-        
-        if (nextCharacter == ';' ){
-            start++;
-            current++;
-            return new Token(TokenType.SEMICOLON, ";", line );
-        }
-        else if (nextCharacter == '+'){
-            start++;
-            current++;
-            return new Token(TokenType.ADD, "+", line);
-        }
-        else if (nextCharacter == '-'){
-            start++;
-            current++;
-            return new Token(TokenType.SUBTRACT, "-", line);
-        }
-        else if (nextCharacter == '*'){
-            start++;
-            current++;
-            return new Token(TokenType.MULTIPLY, "*", line);
-        }
-        else if (nextCharacter == '('){
-            start++;
-            current++;
-            return new Token(TokenType.LEFT_PAREN, "(", line);
-        }
-         else if (nextCharacter == ')'){
-            start++;
-            current++;
-            return new Token(TokenType.RIGHT_PAREN, ")", line);
-        }
-          else if (nextCharacter == '{'){
-            start++;
-            current++;
-            return new Token(TokenType.LEFT_BRACE, "{", line);
-        }
-          else if (nextCharacter == '}'){
-            start++;
-            current++;
-            return new Token(TokenType.RIGHT_BRACE, "}", line);
-        }
-          else if (nextCharacter == '&'){
-            start++;
-            current++;
-            return new Token(TokenType.AND, "&", line);
-        }
-          else if (nextCharacter == '|'){
-            start++;
-            current++;
-            return new Token(TokenType.OR, "|", line);
-        }
-          else if ( nextCharacter == '\r'){
-            start++;
-            current++;
-            return new Token(TokenType.EOL, "\r", line);
-            
-        }
-
-           else if ( nextCharacter == '\n'){
-            start++;
-            current++;
-            line++;
-            return new Token(TokenType.EOL, "\n", line-1);
-            
-        }
-
-    
-
-        
-
-
-
-    
-
-
-
-
-    
-
-
-
-        
 
         // Hint: Start of not knowing what the token is, if we can determine it, return it, otherwise, return null
         TokenType type = TokenType.UNDEFINED;
@@ -166,59 +75,6 @@ public class SpartieScanner {
         // Hint: Examine the character for a comparison but check the next character (as long as one is available)
         // For example: < or <=
         char nextCharacter = source.charAt(current);
-        if (nextCharacter == '<'){
-            start++;
-            
-           if(examine('=')){
-             current++;
-            current++;
-            start = current;
-            
-                return new Token(TokenType.LESS_EQUAL, "<=", line);
-
-           }
-           else{
-            current++;
-            
-            return new Token(TokenType.LESS_THAN, "<", line);
-           }
-            
-        }
-        if (nextCharacter == '>'){
-           
-            start++;
-            
-           if(examine('=')){
-        
-             current++;
-              current++;
-            start = current;
-                return new Token(TokenType.GREATER_EQUAL, ">=", line);
-
-           }
-           else{
-            current++;
-            return new Token(TokenType.GREATER_THAN, ">", line);
-           }
-            
-        }
-
-         if (nextCharacter == '='){
-            start++;
-           
-           if(examine('=')){
-             current++;
-            current++;
-            start = current;
-                return new Token(TokenType.EQUIVALENT, "==", line);
-
-           }
-           else{
-             current++;
-            return new Token(TokenType.ASSIGN, "=", line);
-           }
-            
-        }
 
         return null;
     }
@@ -268,7 +124,7 @@ public class SpartieScanner {
     // This will check if a character is what you expect, if so, it will advance
     // Useful for checking <= or //
     private boolean examine(char expected) {
-        if (current + 1 >= source.length()) return false;
+        if (isAtEnd()) return false;
         if (source.charAt(current + 1) != expected) return false;
 
         // Otherwise, it matches it, so advance
