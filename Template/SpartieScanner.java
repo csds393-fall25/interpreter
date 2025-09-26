@@ -64,7 +64,6 @@ public class SpartieScanner {
         return token;
     }
 
-    // TODO: Complete implementation
     private Token getSingleCharacterToken() {
 
         // Hint: Examine the character, if you can get a token, return it, otherwise
@@ -178,7 +177,6 @@ public class SpartieScanner {
 
     }
 
-    // TODO: Complete implementation
     private Token getComparisonToken() {
         // Hint: Examine the character for a comparison but check the next character (as
         // long as one is available)
@@ -277,7 +275,6 @@ public class SpartieScanner {
         return null;
     }
 
-    // TODO: Complete implementation
     private Token getNumericToken() {
         // Hint: Follow similar idea of String, but in this case if it is a digit
         // You should only allow one period in your scanner
@@ -300,7 +297,6 @@ public class SpartieScanner {
         return null;
     }
 
-    // TODO: Complete implementation
     private Token getIdentifierOrReservedWord() {
         // Hint: Assume first it is an identifier and once you capture it, then check if
         // it is a reserved word.
