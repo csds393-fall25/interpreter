@@ -104,8 +104,8 @@ public class SpartieScanner {
             text = ",";
             lineForConstructor = line;
 
-        } 
-        
+        }
+
         else if (nextCharacter == '-') {
 
             flagForIncrement = true;
@@ -260,17 +260,49 @@ public class SpartieScanner {
         // long as one is available)
         char nextCharacter = source.charAt(current);
 
+        if (nextCharacter == '/') {
+            start++;
+            current++;
+            if (examine('/')) {
+                // examine() only peeks at the next char, not incrementing pointers
+                // Thus, we need to increment by 2 to point at the first character of the comment
+                start+=2;
+                current+=2;
+                while (!isAtEnd() && !examine('\n')) {
+                    current++;
+                }
+                // No checks for start != current because a comment can be empty
+                String comment = source.substring(start, current);
+                start = current;
+                return new Token(TokenType.IGNORE, comment, line);
+            }
+            return new Token(TokenType.DIVIDE, "/", line);
+        }
+
         return null;
     }
 
     // TODO: Complete implementation
     private Token getStringToken() {
-        // Hint: Check if you have a double quote, then keep reading until you hit
-        // another double quote
+        // Hint: Check if you have a double quote, then keep reading until you hit another double quote
         // But, if you do not hit another double quote, you should report an error
         char nextCharacter = source.charAt(current);
 
         String string = null;
+        if (nextCharacter == '"') {
+            start++;
+            current++;
+            while (!examine('"')) {
+                current++;
+                if (examine('\n') || isAtEnd()) {
+                    error(line, "Closing double quote not found on the same line for String Token");
+                }
+            }
+            // No checks for start != current because a String can be empty
+            string = source.substring(start, current);
+            start = current;
+            return new Token(TokenType.STRING, string, line);
+        }
 
         return null;
     }
