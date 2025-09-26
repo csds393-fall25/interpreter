@@ -261,21 +261,24 @@ public class SpartieScanner {
         char nextCharacter = source.charAt(current);
 
         if (nextCharacter == '/') {
-            start++;
-            current++;
+            start = current;
             if (examine('/')) {
-                // examine() only peeks at the next char, not incrementing pointers
-                // Thus, we need to increment by 2 to point at the first character of the comment
-                start+=2;
-                current+=2;
-                while (!isAtEnd() && !examine('\n')) {
+                // TODO: Question: do we capture the // or just the comment content?
+                // Typical case
+                while (!examine('\n') && current < source.length()-1) {
                     current++;
                 }
-                // No checks for start != current because a comment can be empty
+                // At the end of the loop, current points to the last character before the EOL/EOF
+                // Increment it by 1 since substring is end index exclusive
+                current++;
+                // comment is from start (inclusive) to current (exclusive)
                 String comment = source.substring(start, current);
                 start = current;
                 return new Token(TokenType.IGNORE, comment, line);
             }
+            // If there is only one / not followed by another /, it's a divide token
+            start++;
+            current++;
             return new Token(TokenType.DIVIDE, "/", line);
         }
 
@@ -290,15 +293,20 @@ public class SpartieScanner {
 
         String string = null;
         if (nextCharacter == '"') {
+            // Point to first character in the String
+            // TODO: Question: Do we capture the "" in the Token?
             start++;
             current++;
             while (!examine('"')) {
-                current++;
-                if (examine('\n') || isAtEnd()) {
-                    error(line, "Closing double quote not found on the same line for String Token");
+                if (isAtEnd() || examine('\n')) {
+                    error(line, "Closing double quote not found for String Token, reached end of file or end of line");
                 }
+                current++;
             }
-            // No checks for start != current because a String can be empty
+            // At the termination of the loop, current points to the last character before the closing double quote symbol
+            // Increment it since substring is end exclusive
+            current++;
+            // string is from start (inclusive) to current (exclusive)
             string = source.substring(start, current);
             start = current;
             return new Token(TokenType.STRING, string, line);
