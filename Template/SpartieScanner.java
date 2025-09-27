@@ -98,7 +98,16 @@ public class SpartieScanner {
             text = "+";
             lineForConstructor = line;
 
-        } else if (nextCharacter == '-') {
+        }
+           else if (nextCharacter == ',') {
+            flagForIncrement = true;
+            type = TokenType.COMMA;
+            text = ",";
+            lineForConstructor = line;
+
+        } 
+        
+        else if (nextCharacter == '-') {
 
             flagForIncrement = true;
             type = TokenType.SUBTRACT;
