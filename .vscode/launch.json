@@ -9,15 +9,6 @@
             "name": "Main",
             "request": "launch",
             "mainClass": "Main",
-            "projectName": "interpreter_7ac2c053",
-            "args": "Template/source.sprty"
-        },
-        {
-            "type": "java",
-            "name": "Main",
-            "request": "launch",
-            "mainClass": "Main",
-            "projectName": "interpreter_b43ddfc2",
             "args": "Template/source.sprty"
         }
     ]

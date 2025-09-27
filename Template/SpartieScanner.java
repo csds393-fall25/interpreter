@@ -62,81 +62,113 @@ public class SpartieScanner {
         
         // Hint: Examine the character, if you can get a token, return it, otherwise return null
         // Hint: Be careful with the divide, we have ot know if it is a single character
+         TokenType type = TokenType.UNDEFINED;
+         String text = "";
+         int lineForConstructor = line;
+         boolean flagForIncrement = false;
 
         char nextCharacter = source.charAt(current);
         // if hit eol, increase line
         // difference between subtract and negative??
-        System.out.println("current = " + current);
-        System.out.println(nextCharacter + " " + (int)nextCharacter);
-        System.out.println((int)'\n');
-        System.out.println((int)'\r');
-        char eol = 13;
-        System.out.println(eol);
+     
+        
         
         if (nextCharacter == ';' ){
-            start++;
-            current++;
-            return new Token(TokenType.SEMICOLON, ";", line );
+            flagForIncrement = true;
+            type = TokenType.SEMICOLON;
+            text = ";";
+            lineForConstructor = line;
+
+            
+        }
+           else if (nextCharacter == ' ' ){
+            flagForIncrement = true;
+            type = TokenType.IGNORE;
+            text = " ";
+            lineForConstructor = line;
         }
         else if (nextCharacter == '+'){
-            start++;
-            current++;
-            return new Token(TokenType.ADD, "+", line);
+            flagForIncrement = true;
+            type = TokenType.ADD;
+            text = "+";
+            lineForConstructor = line;
+           
         }
         else if (nextCharacter == '-'){
-            start++;
-            current++;
-            return new Token(TokenType.SUBTRACT, "-", line);
+           
+
+            flagForIncrement = true;
+            type = TokenType.SUBTRACT;
+            text = "-";
+            lineForConstructor = line;
         }
         else if (nextCharacter == '*'){
-            start++;
-            current++;
-            return new Token(TokenType.MULTIPLY, "*", line);
+            flagForIncrement = true;
+            type = TokenType.MULTIPLY;
+            text = "*";
+            lineForConstructor = line;
         }
         else if (nextCharacter == '('){
-            start++;
-            current++;
-            return new Token(TokenType.LEFT_PAREN, "(", line);
+            flagForIncrement = true;
+            type = TokenType.LEFT_PAREN;
+            text = "(";
+            lineForConstructor = line;
         }
          else if (nextCharacter == ')'){
-            start++;
-            current++;
-            return new Token(TokenType.RIGHT_PAREN, ")", line);
+            flagForIncrement = true;
+            type = TokenType.RIGHT_PAREN;
+            text = ")";
+            lineForConstructor = line;
         }
           else if (nextCharacter == '{'){
-            start++;
-            current++;
-            return new Token(TokenType.LEFT_BRACE, "{", line);
+            flagForIncrement = true;
+            type = TokenType.LEFT_BRACE;
+            text = "{";
+            lineForConstructor = line;
         }
           else if (nextCharacter == '}'){
-            start++;
-            current++;
-            return new Token(TokenType.RIGHT_BRACE, "}", line);
+            flagForIncrement = true;
+            type = TokenType.RIGHT_BRACE;
+            text = "}";
+            lineForConstructor = line;
         }
           else if (nextCharacter == '&'){
-            start++;
-            current++;
-            return new Token(TokenType.AND, "&", line);
+            flagForIncrement = true;
+            type = TokenType.AND;
+            text = "&";
+            lineForConstructor = line;
         }
           else if (nextCharacter == '|'){
-            start++;
-            current++;
-            return new Token(TokenType.OR, "|", line);
+            flagForIncrement = true;
+            type = TokenType.OR;
+            text = "|";
+            lineForConstructor = line;
         }
           else if ( nextCharacter == '\r'){
-            start++;
-            current++;
-            return new Token(TokenType.EOL, "\r", line);
+            flagForIncrement = true;
+            type = TokenType.EOL;
+            text = "\r";
+            lineForConstructor = line;
             
         }
 
            else if ( nextCharacter == '\n'){
-            start++;
-            current++;
-            line++;
-            return new Token(TokenType.EOL, "\n", line-1);
+             line++;
+            flagForIncrement = true;
+            type = TokenType.EOL;
+            text = "\n";
+            lineForConstructor = line-1;
+            
             
         }
+
+        if (flagForIncrement){
+             start++;
+            current++;
+            return new Token (type, text, lineForConstructor);
+
+        }
+        return null;
 
     
 
@@ -156,10 +188,11 @@ public class SpartieScanner {
         
 
         // Hint: Start of not knowing what the token is, if we can determine it, return it, otherwise, return null
-        TokenType type = TokenType.UNDEFINED;
+    
 
-        return null;
     }
+
+   
 
     // TODO: Complete implementation
     private Token getComparisonToken() {
@@ -246,12 +279,42 @@ public class SpartieScanner {
     private Token getNumericToken() {
         // Hint: Follow similar idea of String, but in this case if it is a digit
         // You should only allow one period in your scanner
+        boolean hasPeriod = false;
+
+        //number is from start (inclusive) to current (exclusive)
+        while(!isAtEnd() && (isDigit(source.charAt(current)) || (source.charAt(current) == '.' && !hasPeriod))) {
+            if(source.charAt(current) == '.') {
+                hasPeriod = true;
+            }
+            current ++;
+        }
+
+        if(current != start) {
+            String number = source.substring(start, current);
+            start = current;
+            return new Token(TokenType.NUMBER, number, line, Double.parseDouble(number));
+        }
+
         return null;
     }
 
     // TODO: Complete implementation
     private Token getIdentifierOrReservedWord() {
         // Hint: Assume first it is an identifier and once you capture it, then check if it is a reserved word.
+
+        while(!isAtEnd() && isAlpha(source.charAt(current))) {
+            current++;
+        }
+
+        if(current != start) {
+            String identifier = source.substring(start, current);
+            start = current;
+            if(keywords.containsKey(identifier)) {
+                return new Token(keywords.get(identifier), identifier, line, identifier);
+            }
+
+            return new Token(TokenType.IDENTIFIER, identifier, line, identifier);
+        }
         return null;
     }
     
