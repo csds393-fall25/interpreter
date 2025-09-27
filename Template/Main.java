@@ -26,7 +26,9 @@ public class Main {
                 SpartieScanner spartieScanner = new SpartieScanner(sourceCode);
                 List<Token> tokens = spartieScanner.scan();
                 for(Token token : tokens) {
+                    if (token.type != TokenType.EOL ){
                     System.out.println(token);
+                    }
                 }
             } catch (IOException e) {
                 System.err.printf("Unable to read file %s\n", filename);
