@@ -261,27 +261,31 @@ public class SpartieScanner {
         char nextCharacter = source.charAt(current);
 
         if (nextCharacter == '/') {
-            start++;
             if (examine('/')) {
                 // TODO: Question: do we capture the // or just the comment content?
-                current +=2;
+                current+=2;
                 start = current;
                 // TODO: Edge case: Empty comment at eof
-                if (current+2 ==  source.length()) {
-                    return new Token(TokenType.IGNORE, "//", line);
-                }
+//                if (current ==  source.length()) {
+//                    return new Token(TokenType.IGNORE, "//", line);
+//                }
                 // Typical case
-                while (nextCharacter != '\n' && current <= source.length()-1) {
+                nextCharacter = source.charAt(current);
+                while (nextCharacter != '\n' && current < source.length()-1) {
                     current++;
                     nextCharacter = source.charAt(current);
                 }
+                if (nextCharacter!='\n') {
+                    current++;
+                }
                 // comment is from start (inclusive) to current (exclusive)
                 String comment = source.substring(start, current);
-                start = current++;
+                start = current;
                 return new Token(TokenType.IGNORE, comment, line);
             } else {
                 // If there is only one / not followed by another /, it's a divide token
                 current++;
+                start = current;
                 return new Token(TokenType.DIVIDE, "/", line);
             }
         }
