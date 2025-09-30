@@ -254,31 +254,28 @@ public class SpartieScanner {
         return null;
     }
 
-    // TODO: Complete implementation
     private Token getDivideOrComment() {
-        // Hint: Examine the character for a comparison but check the next character (as
-        // long as one is available)
         char nextCharacter = source.charAt(current);
 
         if (nextCharacter == '/') {
             if (examine('/')) {
                 // TODO: Question: do we capture the // or just the comment content?
+                // Currently only capturing comment content
                 current+=2;
                 start = current;
-                // TODO: Edge case: Empty comment at eof
-//                if (current ==  source.length()) {
-//                    return new Token(TokenType.IGNORE, "//", line);
-//                }
-                // Typical case
-                nextCharacter = source.charAt(current);
-                while (nextCharacter != '\n' && current < source.length()-1) {
-                    current++;
-                    nextCharacter = source.charAt(current);
+
+                // Edge case: Empty comment at eof - not in class provided test case
+                if (current ==  source.length()) {
+                    return new Token(TokenType.IGNORE, "//", line);
                 }
-                if (nextCharacter!='\n') {
+
+                // Typical case - increment current until EOL or EOF (exclusive)
+                while (!examine('\n') && current < source.length()-1) {
                     current++;
                 }
+
                 // comment is from start (inclusive) to current (exclusive)
+                current++;
                 String comment = source.substring(start, current);
                 start = current;
                 return new Token(TokenType.IGNORE, comment, line);
@@ -295,14 +292,14 @@ public class SpartieScanner {
 
     // TODO: Complete implementation
     private Token getStringToken() {
-        // Hint: Check if you have a double quote, then keep reading until you hit another double quote
-        // But, if you do not hit another double quote, you should report an error
         char nextCharacter = source.charAt(current);
         start = current;
         if (nextCharacter == '"') {
-            // Point to first character in the String
+            // Increment both pointers to point to first character in the String, right after beginning quote
             start++;
             current++;
+
+            // Increment current until ending quote (inclusive)
             nextCharacter = source.charAt(current);
             while (nextCharacter != '"') {
                 if (current == source.length() - 1 || nextCharacter == '\n') {
@@ -313,6 +310,8 @@ public class SpartieScanner {
             }
             // string is from start (inclusive) to current (exclusive)
             String string = source.substring(start, current);
+
+            // Increment current to point to character after the ending quote
             start = current++;
             return new Token(TokenType.STRING, string, line, string);
         }
