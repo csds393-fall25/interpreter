@@ -1,3 +1,11 @@
+/*
+CSDS 345 Fall 2025
+Assignment: Interpreter Part 1
+Team members:
+- Thao Nguyen ttn60
+- Mollie Ackerman msa180
+- Shannon Griswold svg33
+ */
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
