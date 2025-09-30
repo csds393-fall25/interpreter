@@ -1,3 +1,11 @@
+/*
+CSDS 345 Fall 2025
+Assignment: Interpreter Part 1
+Team members:
+- Thao Nguyen ttn60
+- Mollie Ackerman msa180
+- Shannon Griswold svg33
+ */
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,7 +72,6 @@ public class SpartieScanner {
         return token;
     }
 
-    // TODO: Complete implementation
     private Token getSingleCharacterToken() {
 
         // Hint: Examine the character, if you can get a token, return it, otherwise
@@ -105,8 +112,8 @@ public class SpartieScanner {
             text = ",";
             lineForConstructor = line;
 
-        } 
-        
+        }
+
         else if (nextCharacter == '-') {
 
             flagForIncrement = true;
@@ -178,7 +185,6 @@ public class SpartieScanner {
 
     }
 
-    // TODO: Complete implementation
     private Token getComparisonToken() {
         // Hint: Examine the character for a comparison but check the next character (as
         // long as one is available)
@@ -256,28 +262,71 @@ public class SpartieScanner {
         return null;
     }
 
-    // TODO: Complete implementation
     private Token getDivideOrComment() {
-        // Hint: Examine the character for a comparison but check the next character (as
-        // long as one is available)
         char nextCharacter = source.charAt(current);
+
+        if (nextCharacter == '/') {
+            if (examine('/')) {
+                // TODO: Question: do we capture the // or just the comment content?
+                // Currently only capturing comment content
+                current+=2;
+                start = current;
+
+                // Edge case: Empty comment at eof - not in class provided test case
+                if (current ==  source.length()) {
+                    return new Token(TokenType.IGNORE, "//", line);
+                }
+
+                // Typical case - increment current until EOL or EOF (exclusive)
+                while (!examine('\n') && current < source.length()-1) {
+                    current++;
+                }
+
+                // comment is from start (inclusive) to current (exclusive)
+                current++;
+                String comment = source.substring(start, current);
+                start = current;
+                return new Token(TokenType.IGNORE, comment, line);
+            } else {
+                // If there is only one / not followed by another /, it's a divide token
+                current++;
+                start = current;
+                return new Token(TokenType.DIVIDE, "/", line);
+            }
+        }
 
         return null;
     }
 
     // TODO: Complete implementation
     private Token getStringToken() {
-        // Hint: Check if you have a double quote, then keep reading until you hit
-        // another double quote
-        // But, if you do not hit another double quote, you should report an error
         char nextCharacter = source.charAt(current);
+        start = current;
+        if (nextCharacter == '"') {
+            // Increment both pointers to point to first character in the String, right after beginning quote
+            start++;
+            current++;
 
-        String string = null;
+            // Increment current until ending quote (inclusive)
+            nextCharacter = source.charAt(current);
+            while (nextCharacter != '"') {
+                if (current == source.length() - 1 || nextCharacter == '\n') {
+                    error(line, "Closing double quote not found for String Token, reached end of file or end of line");
+                }
+                current++;
+                nextCharacter = source.charAt(current);
+            }
+            // string is from start (inclusive) to current (exclusive)
+            String string = source.substring(start, current);
+
+            // Increment current to point to character after the ending quote
+            start = current++;
+            return new Token(TokenType.STRING, string, line, string);
+        }
 
         return null;
     }
 
-    // TODO: Complete implementation
     private Token getNumericToken() {
         // Hint: Follow similar idea of String, but in this case if it is a digit
         // You should only allow one period in your scanner
@@ -300,7 +349,6 @@ public class SpartieScanner {
         return null;
     }
 
-    // TODO: Complete implementation
     private Token getIdentifierOrReservedWord() {
         // Hint: Assume first it is an identifier and once you capture it, then check if
         // it is a reserved word.
